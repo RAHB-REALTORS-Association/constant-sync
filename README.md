@@ -4,8 +4,8 @@ ConstantSync is a Python script designed to synchronize contacts from an SQL Ser
 
 ## Requirements
 
-- Python 3.6 or higher
-- `pyodbc` package for SQL Server connection
+- `Python 3.9`, `Python 3.10`, or `Python 3.11`
+- `pyodbc 4.0.35` package for SQL Server connection
 - `requests` package for HTTP requests to Constant Contact API
 
 ## Installation
@@ -25,7 +25,7 @@ cd constant-sync
 3. Install the required packages:
 
 ```
-pip install pyodbc requests
+pip install pyodbc requests wheel
 ```
 
 4. Configure your API keys, database connection settings, and other necessary settings in the `settings.py` file.
