@@ -1,2 +1,3 @@
+wheel==0.37.0
 pyodbc==4.0.30
 requests==2.26.0
