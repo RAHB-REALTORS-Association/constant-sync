@@ -1,3 +1,5 @@
+[![Python](https://github.com/RAHB-REALTORS-Association/constant-sync/actions/workflows/python-package.yml/badge.svg?branch=main)](https://github.com/RAHB-REALTORS-Association/constant-sync/actions/workflows/python-package.yml)
+
 # ConstantSync
 
 ConstantSync is a Python script designed to synchronize contacts from an SQL Server database to Constant Contact. The script retrieves contacts from the SQL Server database, compares them with the contacts in Constant Contact, and updates, adds, or removes contacts accordingly.
