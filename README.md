@@ -1,4 +1,4 @@
-[![Python](https://github.com/RAHB-REALTORS-Association/constant-sync/actions/workflows/python-package.yml/badge.svg?branch=main)](https://github.com/RAHB-REALTORS-Association/constant-sync/actions/workflows/python-package.yml)
+[![Python](https://github.com/RAHB-REALTORS-Association/constant-sync/actions/workflows/python.yml/badge.svg?branch=main)](https://github.com/RAHB-REALTORS-Association/constant-sync/actions/workflows/python.yml)
 
 # ConstantSync
 
