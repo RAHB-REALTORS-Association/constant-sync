@@ -1,8 +1,9 @@
 import os
 import requests
 import json
+import secrets
 from datetime import datetime, timedelta
-from flask import Flask, redirect, request, render_template
+from flask import Flask, redirect, request, render_template, session
 from config import CLIENT_ID, CLIENT_SECRET, REDIRECT_URI, AUTHORIZATION_URL, TOKEN_URL
 
 app = Flask(__name__)
@@ -54,7 +55,8 @@ def refresh_access_token():
         'grant_type': 'refresh_token',
         'refresh_token': refresh_token,
         'client_id': CLIENT_ID,
-        'client_secret': CLIENT_SECRET
+        'client_secret': CLIENT_SECRET,
+        'scope': 'contact_data'
     }
     response = requests.post(TOKEN_URL, data=data)
     
@@ -78,17 +80,30 @@ def get_access_token():
 
 @app.route('/authorize')
 def authorize():
-    return redirect(AUTHORIZATION_URL)
+    # Generate a unique state value
+    state = secrets.token_urlsafe(16)
+    session['state'] = state  # Save state value in the user's session
+    
+    # Append the scope and state to the authorization URL
+    url_with_scope_and_state = f"{AUTHORIZATION_URL}?scope=contact_data&state={state}"
+    return redirect(url_with_scope_and_state)
 
 @app.route('/callback')
 def callback():
     code = request.args.get('code')
+    returned_state = request.args.get('state')
+    
+    # Validate the state value
+    if 'state' not in session or session['state'] != returned_state:
+        return render_template('error.html', error_message="State validation failed.")
+
     token_data = {
         'grant_type': 'authorization_code',
         'code': code,
         'redirect_uri': REDIRECT_URI,
         'client_id': CLIENT_ID,
-        'client_secret': CLIENT_SECRET
+        'client_secret': CLIENT_SECRET,
+        'scope': 'contact_data'
     }
     response = requests.post(TOKEN_URL, data=token_data)
     if response.status_code == 200:
