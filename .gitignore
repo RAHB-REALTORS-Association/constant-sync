@@ -161,6 +161,7 @@ cython_debug/
 
 .DS_Store
 tokens.json
+config.py
 
 # Docs site
 _site/
