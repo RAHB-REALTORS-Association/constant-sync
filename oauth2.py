@@ -3,13 +3,10 @@ import requests
 import json
 import secrets
 from datetime import datetime, timedelta
-from flask import Blueprint, Flask, redirect, request, render_template, session
+from flask import Blueprint, redirect, request, render_template, session
 from config import CLIENT_ID, CLIENT_SECRET, REDIRECT_URI, AUTHORIZATION_URL, TOKEN_URL
 
-bp = Blueprint('oauth2', __name__)
-
-app = Flask(__name__)
-app.secret_key = 'some_secret_key'
+oauth2_blueprint = Blueprint('oauth2', __name__)
 
 TOKEN_FILE = 'tokens.json'
 
@@ -80,17 +77,17 @@ def get_access_token():
     else:
         return token_data.get('access_token')
 
-@app.route('/authorize')
+@oauth2_blueprint.route('/authorize')
 def authorize():
     # Generate a unique state value
     state = secrets.token_urlsafe(16)
     session['state'] = state  # Save state value in the user's session
     
     # Append the scope and state to the authorization URL
-    url_with_scope_and_state = f"{AUTHORIZATION_URL}?scope=contact_data&state={state}"
+    url_with_scope_and_state = f"{AUTHORIZATION_URL}&scope=contact_data&state={state}"
     return redirect(url_with_scope_and_state)
 
-@app.route('/callback')
+@oauth2_blueprint.route('/callback')
 def callback():
     code = request.args.get('code')
     returned_state = request.args.get('state')
