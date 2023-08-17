@@ -3,8 +3,10 @@ import requests
 import json
 import secrets
 from datetime import datetime, timedelta
-from flask import Flask, redirect, request, render_template, session
+from flask import Blueprint, Flask, redirect, request, render_template, session
 from config import CLIENT_ID, CLIENT_SECRET, REDIRECT_URI, AUTHORIZATION_URL, TOKEN_URL
+
+bp = Blueprint('oauth2', __name__)
 
 app = Flask(__name__)
 app.secret_key = 'some_secret_key'
