@@ -4,6 +4,9 @@ JSON_URL = "YOUR_JSON_URL_HERE"
 # Constant Contact API Base URL
 BASE_URL = "https://api.cc.email/v3"
 
+# List ID for Constant Contact
+LIST_ID = "YOUR_LIST_ID_HERE"
+
 # OAuth2 Constants
 CLIENT_ID = 'YOUR_CLIENT_ID'
 CLIENT_SECRET = 'YOUR_CLIENT_SECRET'

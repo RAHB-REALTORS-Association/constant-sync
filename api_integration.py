@@ -1,5 +1,5 @@
 import requests
-from config import JSON_URL, BASE_URL
+from config import JSON_URL, BASE_URL, LIST_ID
 
 HEADERS = {
     "Content-Type": "application/json"
@@ -31,6 +31,7 @@ def contact_exists_in_cc(email, token):
 def create_contact_in_cc(contact, token):
     headers = {**HEADERS, **get_auth_header(token)}
     url = f"{BASE_URL}/contacts"
+    contact["lists"] = [{"id": LIST_ID}]
     response = requests.post(url, json=contact, headers=headers)
     if response.status_code != 201:
         print(f"Error {response.status_code} creating contact in CC: ", response.text)
@@ -38,6 +39,7 @@ def create_contact_in_cc(contact, token):
 def update_contact_in_cc(contact_id, contact, token):
     headers = {**HEADERS, **get_auth_header(token)}
     url = f"{BASE_URL}/contacts/{contact_id}"
+    contact["lists"] = [{"id": LIST_ID}]
     response = requests.put(url, json=contact, headers=headers)
     if response.status_code != 204:
         print(f"Error {response.status_code} updating contact in CC: ", response.text)
