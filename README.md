@@ -1,63 +1,69 @@
-[![Python](https://github.com/RAHB-REALTORS-Association/constant-sync/actions/workflows/python.yml/badge.svg?branch=main)](https://github.com/RAHB-REALTORS-Association/constant-sync/actions/workflows/python.yml)
+[![Continuous Integration](https://github.com/RAHB-REALTORS-Association/constant-sync/actions/workflows/python-3.11.yml/badge.svg)](https://github.com/RAHB-REALTORS-Association/constant-sync/actions/workflows/python-3.11.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-# ConstantSync
+**Constant Sync** is an automated synchronization tool designed to keep your data in sync with Constant Contact. It offers a seamless OAuth2 authentication mechanism, scheduled data synchronization, and comprehensive error handling to ensure your contacts are always up-to-date.
 
-ConstantSync is a Python script designed to synchronize contacts from an SQL Server database to Constant Contact. The script retrieves contacts from the SQL Server database, compares them with the contacts in Constant Contact, and updates, adds, or removes contacts accordingly.
+## 📖 Table of Contents
+- [🛠️ Setup](#%EF%B8%8F-setup)
+- [🧑‍💻 Usage](#-usage)
+- [🛡️ Privacy](#%EF%B8%8F-privacy)
+- [🌐 Community](#-community)
+  - [Contributing 👥🤝](#contributing-)
+  - [Reporting Bugs 🐛📝](#reporting-bugs-)
+- [📄 License](#-license)
 
-## Requirements
+## 🛠️ Setup
 
-- `Python 3.9`, `Python 3.10`, or `Python 3.11`
-- `pyodbc 4.0.35` package for SQL Server connection
-- `requests` package for HTTP requests to Constant Contact API
+**1. Clone the Repository 📁**
 
-## Installation
-
-1. Clone this repository:
-
-```
+```bash
 git clone https://github.com/RAHB-REALTORS-Association/constant-sync.git
 ```
 
-2. Change to the `constant-sync` directory:
+**2. Install Dependencies 📦**
 
-```
-cd constant-sync
-```
+Navigate to the project directory and run:
 
-3. Install the required packages:
-
-```
-pip install pyodbc requests wheel
+```bash
+pip install -r requirements.txt
 ```
 
-4. Configure your API keys, database connection settings, and other necessary settings in the `settings.py` file.
+**3. Configuration 🔧**
 
-5. (Optional) If needed, update the SQL query in the `database.py` file to match your database schema.
+Ensure you have your `config.py` file set up with the necessary credentials for your JSON API endpoint and Constant Contact.
 
-## Usage
+**4. Running the Application 🚀**
 
-Run the `main.py` script to synchronize the contacts:
+Execute:
 
+```bash
+python app.py
 ```
-python main.py
-```
 
-The script will first authenticate with Constant Contact using the OAuth 2.0 protocol. If authorization is required, the script will prompt you to enter the callback URL with the authorization code.
+This will start the Flask server, and you can navigate to the displayed URL to initiate the OAuth2 flow with Constant Contact.
 
-Once authenticated, the script will retrieve contacts from the SQL Server database and compare them with the contacts in Constant Contact. It will then update existing contacts, add new ones, and remove any stale contacts as necessary.
+## 🧑‍💻 Usage
 
-## Troubleshooting
+Visit the provided URL and click on "Authorize with Constant Contact". Once authorized, the tool will automatically sync your member database with Constant Contact at the specified intervals.
 
-If you encounter any issues or errors while running the script, please check the following:
+## 🛡️ Privacy
 
-1. Ensure that your API keys and database connection settings in `settings.py` are correct.
+This tool respects your data. No data is stored beyond what is necessary for synchronization purposes. All communication with Constant Contact is secure and compliant with their API requirements.
 
-2. Make sure you have the correct versions of the required packages installed (`pyodbc` and `requests`).
+## 🌐 Community
 
-3. Verify that your SQL query in `database.py` is valid and returns the expected results.
+### Contributing 👥🤝
 
-If you still experience issues, please refer to the project's documentation or submit an issue on the GitHub repository.
+Contributions, feedback, and bug reports are welcome! For more details, please refer to the [Contributing Guide](CONTRIBUTING.md).
 
-## License
+[![Submit a PR](https://img.shields.io/badge/Submit_a_PR-GitHub-%23060606?style=for-the-badge&logo=github&logoColor=fff)](https://github.com/RAHB-REALTORS-Association/constant-sync/compare)
 
-This project is licensed under the MIT License. See the `LICENSE` file for details.
+### Reporting Bugs 🐛📝
+
+If you encounter any issues or have suggestions, please [open a new issue](https://github.com/RAHB-REALTORS-Association/constant-sync/issues/new).
+
+[![Raise an Issue](https://img.shields.io/badge/Raise_an_Issue-GitHub-%23060606?style=for-the-badge&logo=github&logoColor=fff)](https://github.com/RAHB-REALTORS-Association/constant-sync/issues/new/choose)
+
+## 📄 License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for more details.

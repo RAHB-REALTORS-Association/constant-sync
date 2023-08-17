@@ -1,38 +1,37 @@
 ---
 name: Bug report
 about: Create a report to help us improve
-title: ''
-labels: ''
-assignees: ''
+title: '[Bug] '
+labels: 'bug'
+assignees: 'justinh-rahb'
 
 ---
 
-**Describe the bug**
-A clear and concise description of what the bug is.
+🐛 **Bug Report**
 
-**To Reproduce**
-Steps to reproduce the behavior:
-1. Go to '...'
-2. Click on '....'
-3. Scroll down to '....'
-4. See error
+**Description:**
+[Provide a clear and concise description of the bug you encountered.]
 
-**Expected behavior**
-A clear and concise description of what you expected to happen.
+**Steps to Reproduce:**
+1. [Outline the steps you took that led to the bug. Be specific and include any relevant details, such as input data or configuration settings.]
 
-**Screenshots**
-If applicable, add screenshots to help explain your problem.
+**Expected Behavior:**
+[Explain what you expected to happen when following the steps above.]
 
-**Desktop (please complete the following information):**
- - OS: [e.g. iOS]
- - Browser [e.g. chrome, safari]
- - Version [e.g. 22]
+**Actual Behavior:**
+[Describe what actually happened. If there was an error message, include it here.]
 
-**Smartphone (please complete the following information):**
- - Device: [e.g. iPhone6]
- - OS: [e.g. iOS8.1]
- - Browser [e.g. stock browser, safari]
- - Version [e.g. 22]
+**Screenshots / Code Snippets:**
+[If applicable, include any relevant screenshots or code snippets that demonstrate the issue.]
 
-**Additional context**
-Add any other context about the problem here.
+**Environment:**
+- Operating System: [e.g., Windows 10, macOS Big Sur, Ubuntu 20.04, etc.]
+- Browser (if applicable): [e.g., Chrome, Firefox, Safari, etc.]
+- Application/Software Version: [e.g., Chat²GPT version or commit hash]
+- OpenAI API Version (if applicable): [e.g., gpt-3.5-turbo]
+
+**Additional Information:**
+[Include any other relevant information that might help understand or troubleshoot the issue.]
+
+**Possible Solution (Optional):**
+[If you have any ideas on how to fix the bug, you can suggest a possible solution here.]

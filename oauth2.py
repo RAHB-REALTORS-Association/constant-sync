@@ -1,89 +1,120 @@
-import json
 import os
-import time
 import requests
-from settings import CLIENT_ID, CLIENT_SECRET, AUTHORIZATION_URL, TOKEN_URL, TOKEN_FILE
+import json
+from datetime import datetime, timedelta
+from flask import Flask, redirect, request, render_template
+from config import CLIENT_ID, CLIENT_SECRET, REDIRECT_URI, AUTHORIZATION_URL, TOKEN_URL
 
-class OAuth2Handler:
-    def __init__(self):
-        self.client_id = CLIENT_ID
-        self.client_secret = CLIENT_SECRET
-        self.authorization_url = AUTHORIZATION_URL
-        self.token_url = TOKEN_URL
-        self.token_file = TOKEN_FILE
+app = Flask(__name__)
+app.secret_key = 'some_secret_key'
 
-    def get_access_token(self):
-        if os.path.exists(self.token_file):
-            with open(self.token_file, 'r') as f:
-                token = json.load(f)
+TOKEN_FILE = 'tokens.json'
 
-            if token['expires_at'] > time.time() and 'access_token' in token:
-                return token['access_token']
+def ensure_token_file_exists():
+    if not os.path.exists(TOKEN_FILE):
+        with open(TOKEN_FILE, "w") as file:
+            json.dump({
+                "access_token": "",
+                "refresh_token": "",
+                "expires_in": 0
+            }, file)
 
-            elif 'refresh_token' in token:
-                new_token = self.refresh_access_token(token['refresh_token'])
-                if 'access_token' in new_token:
-                    with open(self.token_file, 'w') as f:
-                        json.dump(new_token, f)
-                    return new_token['access_token']
-                else:
-                    print("Refresh token is invalid or expired. Please reauthorize the application.")
-                    os.remove(self.token_file)
-            else:
-                print("Refresh token not found. Please reauthorize the application.")
-                os.remove(self.token_file)
+# Call this function at the beginning to ensure tokens.json exists
+ensure_token_file_exists()
 
-        # If the token file does not exist or has been removed due to errors, request a new access token
-        code_request = f"{self.authorization_url}?response_type=code&client_id={self.client_id}&scope=contact_data&access_type=offline&redirect_uri=https://localhost&state=randomstate"
-        print(f"Please go to this URL and authorize the application: {code_request}")
-        callback_url = input("Enter the full callback URL: ")
+def save_tokens_to_file(access_token, refresh_token, expires_in):
+    expiration_time = datetime.now() + timedelta(seconds=expires_in)
+    token_data = {
+        'access_token': access_token,
+        'refresh_token': refresh_token,
+        'expires_at': expiration_time.strftime('%Y-%m-%d %H:%M:%S')
+    }
+    with open(TOKEN_FILE, 'w') as f:
+        json.dump(token_data, f)
 
-        code = self.parse_code(callback_url)
-        token = self.request_access_token(code)
-
-        with open(self.token_file, 'w') as f:
-            json.dump(token, f)
-
-        return token['access_token']
-
-    def parse_code(self, callback_url):
-        query = callback_url.split('?')[1]
-        params = query.split('&')
-        for param in params:
-            key, value = param.split('=')
-            if key == 'code':
-                return value
+def load_tokens_from_file():
+    try:
+        with open(TOKEN_FILE, 'r') as f:
+            return json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError):
         return None
 
-    def request_access_token(self, code):
-        token_request_data = {
-            "code": code,
-            "grant_type": "authorization_code",
-            "redirect_uri": "https://localhost"
-        }
-        headers = {
-            "Content-Type": "application/x-www-form-urlencoded"
-        }
-        response = requests.post(self.token_url, auth=(self.client_id, self.client_secret), headers=headers, data=token_request_data)
-        token_data = response.json()
-        token_data['expires_at'] = time.time() + token_data['expires_in']
-        return token_data
+def is_token_expired(token_data):
+    expires_at = datetime.strptime(token_data['expires_at'], '%Y-%m-%d %H:%M:%S')
+    return datetime.now() > expires_at - timedelta(minutes=5)  # Buffer of 5 minutes
 
-    def refresh_access_token(self, refresh_token):
-        token_request_data = {
-            "refresh_token": refresh_token,
-            "grant_type": "refresh_token"
-        }
-        headers = {
-            "Content-Type": "application/x-www-form-urlencoded"
-        }
-        response = requests.post(self.token_url, auth=(self.client_id, self.client_secret), headers=headers, data=token_request_data)
-        token_data = response.json()
-        
-        if 'expires_in' in token_data:
-            token_data['expires_at'] = time.time() + token_data['expires_in']
-        else:
-            # handle missing 'expires_in' here, e.g., set a default value or log a warning
-            token_data['expires_at'] = time.time() + 86400
+def refresh_access_token():
+    token_data = load_tokens_from_file()
+    refresh_token = token_data.get('refresh_token')
+    
+    if not refresh_token:
+        return None
 
-        return token_data
+    data = {
+        'grant_type': 'refresh_token',
+        'refresh_token': refresh_token,
+        'client_id': CLIENT_ID,
+        'client_secret': CLIENT_SECRET
+    }
+    response = requests.post(TOKEN_URL, data=data)
+    
+    if response.status_code == 200:
+        new_tokens = response.json()
+        save_tokens_to_file(new_tokens['access_token'], new_tokens['refresh_token'], new_tokens['expires_in'])
+        return new_tokens['access_token']
+    else:
+        handle_error(response)
+        return None
+
+def get_access_token():
+    token_data = load_tokens_from_file()
+    if not token_data:
+        return None
+    
+    if is_token_expired(token_data):
+        return refresh_access_token()
+    else:
+        return token_data.get('access_token')
+
+@app.route('/authorize')
+def authorize():
+    return redirect(AUTHORIZATION_URL)
+
+@app.route('/callback')
+def callback():
+    code = request.args.get('code')
+    token_data = {
+        'grant_type': 'authorization_code',
+        'code': code,
+        'redirect_uri': REDIRECT_URI,
+        'client_id': CLIENT_ID,
+        'client_secret': CLIENT_SECRET
+    }
+    response = requests.post(TOKEN_URL, data=token_data)
+    if response.status_code == 200:
+        data = response.json()
+        save_tokens_to_file(data['access_token'], data['refresh_token'], data['expires_in'])
+        return render_template('success.html')
+    else:
+        handle_error(response)
+        return render_template('error.html', error_message=f"Error during authorization: {response.text}")
+
+def handle_error(response):
+    if response.status_code == 400:
+        # Handle "Bad Request" error
+        print("Error 400: Bad Request - ", response.text)
+    elif response.status_code == 401:
+        # Handle "Unauthorized" error
+        print("Error 401: Unauthorized - ", response.text)
+        # Ideally, you'd trigger a token refresh here if it's an auth error.
+    elif response.status_code == 403:
+        # Handle "Forbidden" error
+        print("Error 403: Forbidden - ", response.text)
+    elif response.status_code == 404:
+        # Handle "Not Found" error
+        print("Error 404: Not Found - ", response.text)
+    elif response.status_code == 500:
+        # Handle "Internal Server Error"
+        print("Error 500: Internal Server Error - ", response.text)
+    else:
+        print(f"Error {response.status_code}: ", response.text)
