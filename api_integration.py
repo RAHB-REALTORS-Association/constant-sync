@@ -25,8 +25,24 @@ def fetch_data_from_json():
         print(f"Error {response.status_code} fetching data from JSON: ", response.text)
         return []
 
-def format_contact_data(contact):
+def fetch_tags_mapping(token):
+    headers = {**HEADERS, **get_auth_header(token)}
+    url = f"{BASE_URL}/contact_tags"
+    response = requests.get(url, headers=headers)
+    if response.status_code == 200:
+        tags_data = response.json()['tags']
+        return {tag['name']: tag['tag_id'] for tag in tags_data}
+    else:
+        print(f"Error {response.status_code} fetching tags: ", response.text)
+        return {}
+
+def format_contact_data(contact, tags_mapping):
     """Format the contact data according to Constant Contact's expectations"""
+    
+    # Safely retrieve and process the Tags
+    tags = contact.get('Tags', '')
+    taggings = [tags_mapping[tag.strip()] for tag in tags.split(', ') if tags and tag.strip() in tags_mapping] 
+
     formatted = {
         'email_address': {
             'address': contact['EMAIL'],
@@ -46,21 +62,20 @@ def format_contact_data(contact):
             'city': contact['OfficeCity'],
             'postal_code': contact['ZIP']
         }],
-        'taggings': [tag.strip() for tag in contact['Tags'].split(',')]#,
-        #'custom_fields': [
-        #    {'custom_field_id': 'CUST_NO', 'value': contact['CUST_NO']},
-        #    {'custom_field_id': 'Login', 'value': contact['Login']},
-        #    {'custom_field_id': 'LastImport', 'value': contact['LastImport']}
-        #]
+        'taggings': taggings
     }
 
     # Convert the Anniversary and Birthday to the expected formats
-    anniversary_parts = contact['Anniversary'].split('/')
-    formatted['anniversary'] = f"{anniversary_parts[2]}-{anniversary_parts[0].zfill(2)}-{anniversary_parts[1].zfill(2)}"
+    anniversary = contact.get('Anniversary')
+    if anniversary:
+        anniversary_parts = anniversary.split('/')
+        formatted['anniversary'] = f"{anniversary_parts[2]}-{anniversary_parts[0].zfill(2)}-{anniversary_parts[1].zfill(2)}"
     
-    birthday_parts = contact['Birthday'].split('/')
-    formatted['birthday_month'] = int(birthday_parts[0])
-    formatted['birthday_day'] = int(birthday_parts[1])
+    birthday = contact.get('Birthday')
+    if birthday:
+        birthday_parts = birthday.split('/')
+        formatted['birthday_month'] = int(birthday_parts[0])
+        formatted['birthday_day'] = int(birthday_parts[1])
     
     return formatted
 
@@ -93,31 +108,31 @@ def add_contact_to_list(contact_id, token):
     else:
         print(f"Error {response.status_code} adding contact to list: ", response.text)
 
-def create_contact_in_cc(contact, token):
+def create_contact_in_cc(contact, token, tags_mapping):
     headers = {**HEADERS, **get_auth_header(token)}
     url = f"{BASE_URL}/contacts"
     
-    formatted_contact = format_contact_data(contact)
+    formatted_contact = format_contact_data(contact, tags_mapping)
     formatted_contact["create_source"] = "Account"
     
     response = requests.post(url, json=formatted_contact, headers=headers)
     if response.status_code == 201:
         contact_id = response.json()["contact_id"]
         print(f"Successfully created contact in CC: {response.json()}")
-        add_contact_to_list(contact_id, token)  # Add contact to list after creation
+        #add_contact_to_list(contact_id, token)  # Add contact to list after creation
     else:
         print(f"Error {response.status_code} creating contact in CC: ", response.text)
 
-def update_contact_in_cc(contact_id, contact, token):
+def update_contact_in_cc(contact_id, contact, token, tags_mapping):
     headers = {**HEADERS, **get_auth_header(token)}
     url = f"{BASE_URL}/contacts/{contact_id}"
 
-    formatted_contact = format_contact_data(contact)
+    formatted_contact = format_contact_data(contact, tags_mapping)
     formatted_contact["update_source"] = "Account"
     
     response = requests.put(url, json=formatted_contact, headers=headers)
     if response.status_code in [200, 204]:  # Success status codes
         print(f"Successfully updated contact in CC: {response.json()}")
-        add_contact_to_list(contact_id, token)  # Add contact to list after update
+        #add_contact_to_list(contact_id, token)  # Add contact to list after update
     else:
         print(f"Error {response.status_code} updating contact in CC: ", response.text)
