@@ -8,6 +8,15 @@ HEADERS = {
 def get_auth_header(token):
     return {"Authorization": f"Bearer {token}"}
 
+def get_contact_lists(token, limit=1):
+    headers = {**HEADERS, **get_auth_header(token)}
+    response = requests.get(f"{BASE_URL}/contact_lists?limit={limit}", headers=headers)
+    if response.status_code == 200:
+        return response.json()
+    else:
+        print(f"Error {response.status_code} fetching contact lists: ", response.text)
+        return None
+
 def fetch_data_from_json():
     response = requests.get(JSON_URL)
     if response.status_code == 200:

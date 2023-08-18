@@ -5,6 +5,7 @@ import secrets
 from datetime import datetime, timedelta
 from flask import Blueprint, redirect, request, render_template, session
 from config import CLIENT_ID, CLIENT_SECRET, REDIRECT_URI, AUTHORIZATION_URL, TOKEN_URL
+from api_integration import get_contact_lists
 
 oauth2_blueprint = Blueprint('oauth2', __name__)
 
@@ -116,6 +117,14 @@ def callback():
     else:
         handle_error(response)
         return render_template('error.html', error_message=f"Error during authorization: {response.text}")
+
+@oauth2_blueprint.route('/is_authenticated')
+def is_authenticated():
+    token = get_access_token()
+    if token and get_contact_lists(token):
+        return {"authenticated": True}
+    else:
+        return {"authenticated": False}
 
 def handle_error(response):
     if response.status_code == 400:
