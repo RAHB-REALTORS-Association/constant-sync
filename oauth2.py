@@ -83,9 +83,13 @@ def authorize():
     state = secrets.token_urlsafe(16)
     session['state'] = state  # Save state value in the user's session
     
-    # Append the scope and state to the authorization URL
-    url_with_scope_and_state = f"{AUTHORIZATION_URL}&scope=contact_data&state={state}"
-    return redirect(url_with_scope_and_state)
+    # Construct the full authorization URL
+    full_auth_url = (f"{AUTHORIZATION_URL}?response_type=code"
+                     f"&client_id={CLIENT_ID}"
+                     f"&redirect_uri={REDIRECT_URI}"
+                     f"&scope=contact_data offline_access"
+                     f"&state={state}")
+    return redirect(full_auth_url)
 
 @oauth2_blueprint.route('/callback')
 def callback():
