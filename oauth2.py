@@ -5,6 +5,7 @@ import secrets
 from datetime import datetime, timedelta
 from flask import Blueprint, redirect, request, render_template, session
 from config import CLIENT_ID, CLIENT_SECRET, REDIRECT_URI, AUTHORIZATION_URL, TOKEN_URL
+from synchronizer import synchronize_contacts
 
 oauth2_blueprint = Blueprint('oauth2', __name__)
 
@@ -107,7 +108,11 @@ def callback():
     response = requests.post(TOKEN_URL, data=token_data)
     if response.status_code == 200:
         data = response.json()
-        save_tokens_to_file(data['access_token'], data['refresh_token'], data['expires_in'])
+        save_tokens_to_file(data['access_token'], data.get('refresh_token', ''), data['expires_in'])
+        
+        # Trigger synchronization immediately after a successful authorization
+        synchronize_contacts()
+
         return render_template('success.html')
     else:
         handle_error(response)
