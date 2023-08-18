@@ -20,7 +20,7 @@ def process_contacts_chunk(chunk, tags_mapping):
         else:
             create_contact_in_cc(contact, access_token, tags_mapping)
 
-        time.sleep(0.5)  # Introduce a 2-second delay after processing each contact
+        time.sleep(0.3)  # Introduce a 2-second delay after processing each contact
 
 def synchronize_contacts():
     try:
