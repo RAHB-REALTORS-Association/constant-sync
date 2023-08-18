@@ -1,0 +1,8 @@
+title: Constant Sync
+description: A Python application to synchronize contacts to Constant Contact. Automates updating, adding, and removing contacts to ensure seamless integration.
+theme: just-the-docs
+
+url: https://rahb-realtors-association.github.io/constant-sync/
+
+aux_links:
+  GitHub Repo: https://github.com/RAHB-REALTORS-Association/constant-sync/
