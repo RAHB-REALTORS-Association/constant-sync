@@ -8,7 +8,7 @@ import logging
 
 logging.basicConfig(level=logging.INFO)
 
-app = Flask(__name__)
+app = Flask(__name__, static_url_path='/static')
 app.register_blueprint(oauth2_blueprint)
 app.secret_key = 'some_secure_random_string'  # Please use a secure secret key in production
 
