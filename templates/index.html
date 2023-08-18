@@ -2,7 +2,7 @@
 
 {% block content %}
   <div class="content">
-    <h1>Welcome to the Synchronization App</h1>
+    <h1>Constant Sync</h1>
     <p>Click the button below to authorize the application:</p>
     <a href="{{ url_for('oauth2.authorize') }}" class="btn btn-primary">Authorize</a>
     <hr>
@@ -12,7 +12,7 @@
     </form>
     {% if last_sync %}
     <hr>
-    <p>Last sync status: {{ last_sync }}</p>
+    <p>Status: {{ last_sync }}</p>
     {% endif %}
   </div>
 {% endblock %}

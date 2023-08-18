@@ -25,7 +25,7 @@ def manual_sync():
     try:
         synchronize_contacts()
         last_sync_status = f"Last successful sync at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
-        return render_template('success.html', message="Manual synchronization initiated successfully.")
+        return render_template('sync_success.html')
     except Exception as e:
         last_sync_status = f"Error during sync at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}: {str(e)}"
         return render_template('error.html', error_message=f"Error during manual synchronization: {e}")
