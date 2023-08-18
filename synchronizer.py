@@ -1,3 +1,4 @@
+import time
 from api_integration import fetch_data_from_json, create_contact_in_cc, contact_exists_in_cc, update_contact_in_cc
 from oauth2 import get_access_token
 
@@ -18,6 +19,8 @@ def process_contacts_chunk(chunk):
             update_contact_in_cc(contact_id, contact, access_token)  # Pass the token to the function
         else:
             create_contact_in_cc(contact, access_token)  # Pass the token to the function
+
+        time.sleep(2)  # Introduce a 2-second delay after processing each contact
 
 def synchronize_contacts():
     try:
