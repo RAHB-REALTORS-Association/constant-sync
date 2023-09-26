@@ -28,7 +28,6 @@ assignees: 'justinh-rahb'
 - Operating System: [e.g., Windows 10, macOS Big Sur, Ubuntu 20.04, etc.]
 - Browser (if applicable): [e.g., Chrome, Firefox, Safari, etc.]
 - Application/Software Version: [e.g., Chat²GPT version or commit hash]
-- OpenAI API Version (if applicable): [e.g., gpt-3.5-turbo]
 
 **Additional Information:**
 [Include any other relevant information that might help understand or troubleshoot the issue.]
